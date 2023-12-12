@@ -96,14 +96,44 @@ def p1(file):
     return _bfs(lines, starting_node)
 
 
-def p2(file):
-    answer = 0
-    for line in file:
-        ...
-    return answer
+def _bfs_p2(graph, start):
+    queue = deque([(start, 0)])
+    visited = set()
 
+    while queue:
+        vertex, distance = queue.popleft()
+        if vertex in visited:
+            continue
+        visited.add(vertex)
+
+        if graph[vertex[0]][vertex[1]] == 'S':
+            for neighbor in _find_s_neighbors(graph, vertex):
+                if neighbor not in visited:
+                    queue.append((neighbor, distance + 1))
+        else:
+            for neighbor in _get_neighbors(graph, vertex):
+                if neighbor not in visited:
+                    queue.append((neighbor, distance + 1))
+
+        # _visualize_graph_with_distances(graph, queue)
+
+    return visited
+
+
+def p2(file):
+    lines = [line.strip() for line in file]
+
+    starting_node = (0, 0)
+    for i, l in enumerate(lines):
+        if 'S' in l:
+            starting_node = (i, l.index('S'))
+
+    perimeter = _bfs_p2(lines, starting_node)
+    print(perimeter)
+
+    return len(perimeter)
 
 day = f"d{__file__.split('/')[-1].split('.')[0].replace('day', '')}"
-with open(f'inputs/{day}') as file:
-    print(p1(file))
-    # print(p2(file))
+with open(f'inputs/{day}_example') as file:
+    # print(p1(file))
+    print(p2(file))
